@@ -1,0 +1,11 @@
+.git
+.gradle
+.idea
+.kotlin
+build/
+*.iml
+*.ipr
+*.iws
+out/
+k8s/
+docker-compose.yml
