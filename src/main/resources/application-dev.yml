@@ -8,8 +8,5 @@ spring:
       ddl-auto: none
   flyway:
     enabled: true
-
-app:
-  security:
-    jwt:
-      secret: Lx9p9jf2hxG5FHT9OHgbIVluIFV2R3EauOzRhvoQSzU=
+  config:
+    import: optional:file:.env[.properties]
