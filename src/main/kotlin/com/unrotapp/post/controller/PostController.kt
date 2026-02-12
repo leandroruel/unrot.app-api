@@ -3,6 +3,8 @@ package com.unrotapp.post.controller
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
 import com.unrotapp.post.dto.*
 import com.unrotapp.post.service.PostService
@@ -26,8 +28,8 @@ class PostController(private val postService: PostService) {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun create(@RequestBody request: CreatePostRequest): PostResponse =
-        postService.create(request.authorId, request.type, request.content).toResponse()
+    fun create(@AuthenticationPrincipal jwt: Jwt, @RequestBody request: CreatePostRequest): PostResponse =
+        postService.create(jwt.userId(), request.type, request.content).toResponse()
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -42,8 +44,12 @@ class PostController(private val postService: PostService) {
 
     @PostMapping("/{postId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
-    fun addComment(@PathVariable postId: UUID, @RequestBody request: CreateCommentRequest): PostCommentResponse =
-        postService.addComment(postId, request.userId, request.content).toResponse()
+    fun addComment(
+        @PathVariable postId: UUID,
+        @AuthenticationPrincipal jwt: Jwt,
+        @RequestBody request: CreateCommentRequest
+    ): PostCommentResponse =
+        postService.addComment(postId, jwt.userId(), request.content).toResponse()
 
     @DeleteMapping("/{postId}/comments/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -54,23 +60,26 @@ class PostController(private val postService: PostService) {
 
     @PostMapping("/{postId}/likes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun likePost(@PathVariable postId: UUID, @RequestBody request: LikeRequest) =
-        postService.likePost(postId, request.userId)
+    fun likePost(@PathVariable postId: UUID, @AuthenticationPrincipal jwt: Jwt) =
+        postService.likePost(postId, jwt.userId())
 
     @DeleteMapping("/{postId}/likes")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun unlikePost(@PathVariable postId: UUID, @RequestBody request: LikeRequest) =
-        postService.unlikePost(postId, request.userId)
+    fun unlikePost(@PathVariable postId: UUID, @AuthenticationPrincipal jwt: Jwt) =
+        postService.unlikePost(postId, jwt.userId())
 
     // Bookmarks
 
     @PostMapping("/{postId}/bookmarks")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun bookmarkPost(@PathVariable postId: UUID, @RequestBody request: BookmarkRequest) =
-        postService.bookmarkPost(postId, request.userId)
+    fun bookmarkPost(@PathVariable postId: UUID, @AuthenticationPrincipal jwt: Jwt) =
+        postService.bookmarkPost(postId, jwt.userId())
 
     @DeleteMapping("/{postId}/bookmarks")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun unbookmarkPost(@PathVariable postId: UUID, @RequestBody request: BookmarkRequest) =
-        postService.unbookmarkPost(postId, request.userId)
+    fun unbookmarkPost(@PathVariable postId: UUID, @AuthenticationPrincipal jwt: Jwt) =
+        postService.unbookmarkPost(postId, jwt.userId())
+
+    private fun Jwt.userId(): UUID =
+        UUID.fromString(subject)
 }

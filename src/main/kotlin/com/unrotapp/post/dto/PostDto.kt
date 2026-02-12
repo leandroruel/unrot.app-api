@@ -25,20 +25,10 @@ data class PostCommentResponse(
 )
 
 data class CreatePostRequest(
-    val authorId: UUID,
     val type: PostType,
     val content: String?
 )
 
 data class CreateCommentRequest(
-    val userId: UUID,
     val content: String
-)
-
-data class LikeRequest(
-    val userId: UUID
-)
-
-data class BookmarkRequest(
-    val userId: UUID
 )

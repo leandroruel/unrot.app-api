@@ -20,6 +20,13 @@ spring:
     username: demo
     password: demo
 
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:dev-change-me-please-32-chars-min}
+      issuer: unrotapp
+      ttl: 1h
+
 management:
   endpoints:
     web:

@@ -8,3 +8,10 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
   flyway:
     enabled: false
+
+app:
+  security:
+    jwt:
+      secret: test-change-me-please-32-chars-min
+      issuer: unrotapp
+      ttl: 1h
