@@ -85,6 +85,15 @@ class PostService(
         postRepository.save(post)
     }
 
+    // Shares
+
+    @Transactional
+    fun sharePost(postId: UUID) {
+        val post = findById(postId)
+        post.shareCount++
+        postRepository.save(post)
+    }
+
     // Bookmarks
 
     @Transactional

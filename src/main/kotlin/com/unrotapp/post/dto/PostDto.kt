@@ -12,6 +12,7 @@ data class PostResponse(
     val likeCount: Long,
     val commentCount: Long,
     val bookmarkCount: Long,
+    val shareCount: Long,
     val createdAt: Instant
 )
 

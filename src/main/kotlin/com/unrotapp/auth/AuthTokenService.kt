@@ -27,6 +27,7 @@ class AuthTokenService(
             .subject(userId.toString())
             .claim("email", user.email)
             .claim("displayName", user.displayName)
+            .claim("role", user.role.name)
             .build()
 
         val headers = JwsHeader.with(MacAlgorithm.HS256).build()

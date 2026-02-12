@@ -32,5 +32,8 @@ class Post(
     var bookmarkCount: Long = 0,
 
     @Column(nullable = false)
+    var shareCount: Long = 0,
+
+    @Column(nullable = false)
     val createdAt: Instant = Instant.now()
 )

@@ -2,6 +2,8 @@ package com.unrotapp.user
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -26,6 +28,10 @@ class User(
 
     @Column(name = "display_name", nullable = false)
     val displayName: String,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val role: Role = Role.USER,
 
     @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now(),

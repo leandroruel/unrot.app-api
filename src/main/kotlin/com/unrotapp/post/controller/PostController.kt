@@ -3,6 +3,7 @@ package com.unrotapp.post.controller
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
@@ -28,12 +29,14 @@ class PostController(private val postService: PostService) {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("#jwt.getClaimAsString('role') == 'ADMIN' or #jwt.getClaimAsString('role') == 'PARTNER'")
     fun create(@AuthenticationPrincipal jwt: Jwt, @RequestBody request: CreatePostRequest): PostResponse =
         postService.create(jwt.userId(), request.type, request.content).toResponse()
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun delete(@PathVariable id: UUID) =
+    @PreAuthorize("#jwt.getClaimAsString('role') == 'ADMIN' or #jwt.getClaimAsString('role') == 'PARTNER'")
+    fun delete(@AuthenticationPrincipal jwt: Jwt, @PathVariable id: UUID) =
         postService.delete(id)
 
     // Comments
@@ -67,6 +70,13 @@ class PostController(private val postService: PostService) {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun unlikePost(@PathVariable postId: UUID, @AuthenticationPrincipal jwt: Jwt) =
         postService.unlikePost(postId, jwt.userId())
+
+    // Shares
+
+    @PostMapping("/{postId}/shares")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun sharePost(@PathVariable postId: UUID) =
+        postService.sharePost(postId)
 
     // Bookmarks
 

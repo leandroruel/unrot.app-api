@@ -23,7 +23,7 @@ spring:
 app:
   security:
     jwt:
-      secret: ${JWT_SECRET:dev-change-me-please-32-chars-min}
+      secret: ${JWT_SECRET:ZGV2LWNoYW5nZS1tZS1wbGVhc2UtMzItY2hhcnMtbWlu}
       issuer: unrotapp
       ttl: 1h
 

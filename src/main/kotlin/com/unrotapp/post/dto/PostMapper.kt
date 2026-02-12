@@ -11,6 +11,7 @@ fun Post.toResponse() = PostResponse(
     likeCount = likeCount,
     commentCount = commentCount,
     bookmarkCount = bookmarkCount,
+    shareCount = shareCount,
     createdAt = createdAt
 )
 
