@@ -9,6 +9,7 @@ import com.unrotapp.post.model.PostComment
 import com.unrotapp.post.model.PostBookmark
 import com.unrotapp.post.model.PostLike
 import com.unrotapp.post.model.PostType
+import com.unrotapp.post.repository.CategoryRepository
 import com.unrotapp.post.repository.PostBookmarkRepository
 import com.unrotapp.post.repository.PostCommentRepository
 import com.unrotapp.post.repository.PostLikeRepository
@@ -18,6 +19,7 @@ import java.util.UUID
 @Service
 class PostService(
     private val postRepository: PostRepository,
+    private val categoryRepository: CategoryRepository,
     private val commentRepository: PostCommentRepository,
     private val likeRepository: PostLikeRepository,
     private val bookmarkRepository: PostBookmarkRepository
@@ -32,12 +34,23 @@ class PostService(
     fun findByAuthorId(authorId: UUID, pageable: Pageable): Page<Post> =
         postRepository.findByAuthorId(authorId, pageable)
 
-    fun create(authorId: UUID, type: PostType, content: String?): Post {
+    fun findByCategorySlug(slug: String, pageable: Pageable): Page<Post> =
+        postRepository.findByCategorySlug(slug, pageable)
+
+    fun create(authorId: UUID, type: PostType, content: String?, categorySlug: String?): Post {
         if (type == PostType.NOTE) {
             requireNotNull(content) { "Note content is required" }
             require(content.length <= 250) { "Note content must not exceed 250 characters" }
         }
-        return postRepository.save(Post(authorId = authorId, type = type, content = content))
+        val category = if (type == PostType.ARTICLE) {
+            requireNotNull(categorySlug) { "Article category is required" }
+            categoryRepository.findBySlug(categorySlug)
+                ?: throw NoSuchElementException("Category not found: $categorySlug")
+        } else {
+            require(categorySlug == null) { "Category is only allowed for articles" }
+            null
+        }
+        return postRepository.save(Post(authorId = authorId, type = type, content = content, category = category))
     }
 
     fun delete(id: UUID) =

@@ -9,6 +9,7 @@ data class PostResponse(
     val authorId: UUID,
     val type: PostType,
     val content: String?,
+    val category: CategoryResponse?,
     val likeCount: Long,
     val commentCount: Long,
     val bookmarkCount: Long,
@@ -16,6 +17,11 @@ data class PostResponse(
     val createdAt: Instant
 )
 
+data class CategoryResponse(
+    val id: UUID,
+    val name: String,
+    val slug: String
+)
 
 data class PostCommentResponse(
     val id: UUID,
@@ -27,7 +33,8 @@ data class PostCommentResponse(
 
 data class CreatePostRequest(
     val type: PostType,
-    val content: String?
+    val content: String?,
+    val categorySlug: String? = null
 )
 
 data class CreateCommentRequest(

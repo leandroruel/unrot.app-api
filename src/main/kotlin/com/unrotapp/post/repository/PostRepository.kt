@@ -8,4 +8,5 @@ import java.util.UUID
 
 interface PostRepository : JpaRepository<Post, UUID> {
     fun findByAuthorId(authorId: UUID, pageable: Pageable): Page<Post>
+    fun findByCategorySlug(slug: String, pageable: Pageable): Page<Post>
 }

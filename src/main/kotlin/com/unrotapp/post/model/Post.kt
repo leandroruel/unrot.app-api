@@ -22,6 +22,10 @@ class Post(
     @Column(columnDefinition = "TEXT")
     val content: String? = null,
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    val category: Category? = null,
+
     @Column(nullable = false)
     var likeCount: Long = 0,
 

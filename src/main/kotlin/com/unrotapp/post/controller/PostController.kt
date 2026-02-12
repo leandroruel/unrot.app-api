@@ -27,11 +27,15 @@ class PostController(private val postService: PostService) {
     fun findByAuthor(@PathVariable authorId: UUID, pageable: Pageable): Page<PostResponse> =
         postService.findByAuthorId(authorId, pageable).map { it.toResponse() }
 
+    @GetMapping("/category/{slug}")
+    fun findByCategory(@PathVariable slug: String, pageable: Pageable): Page<PostResponse> =
+        postService.findByCategorySlug(slug, pageable).map { it.toResponse() }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("#jwt.getClaimAsString('role') == 'ADMIN' or #jwt.getClaimAsString('role') == 'PARTNER'")
     fun create(@AuthenticationPrincipal jwt: Jwt, @RequestBody request: CreatePostRequest): PostResponse =
-        postService.create(jwt.userId(), request.type, request.content).toResponse()
+        postService.create(jwt.userId(), request.type, request.content, request.categorySlug).toResponse()
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
