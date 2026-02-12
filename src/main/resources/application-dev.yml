@@ -5,4 +5,7 @@ spring:
     password: demo
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+  flyway:
+    enabled: true
+    clean-disabled: false
