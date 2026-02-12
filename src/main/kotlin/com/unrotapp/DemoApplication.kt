@@ -1,4 +1,4 @@
-package com.example.app
+package com.unrotapp
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

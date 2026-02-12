@@ -1,7 +1,7 @@
-package com.example.app.post.dto
+package com.unrotapp.post.dto
 
-import com.example.app.post.model.Post
-import com.example.app.post.model.PostComment
+import com.unrotapp.post.model.Post
+import com.unrotapp.post.model.PostComment
 
 fun Post.toResponse() = PostResponse(
     id = id!!,

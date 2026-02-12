@@ -1,4 +1,4 @@
-package com.example.app.post.model
+package com.unrotapp.post.model
 
 import jakarta.persistence.*
 import java.time.Instant

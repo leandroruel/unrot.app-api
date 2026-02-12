@@ -1,6 +1,6 @@
-package com.example.app.post.dto
+package com.unrotapp.post.dto
 
-import com.example.app.post.model.PostType
+import com.unrotapp.post.model.PostType
 import java.time.Instant
 import java.util.UUID
 

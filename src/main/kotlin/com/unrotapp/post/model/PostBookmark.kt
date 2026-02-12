@@ -1,4 +1,4 @@
-package com.example.app.post.model
+package com.unrotapp.post.model
 
 import jakarta.persistence.*
 import java.time.Instant
@@ -6,12 +6,12 @@ import java.util.UUID
 
 @Entity
 @Table(
-    name = "post_likes",
+    name = "post_bookmarks",
     uniqueConstraints = [
         UniqueConstraint(columnNames = ["post_id", "user_id"])
     ]
 )
-class PostLike(
+class PostBookmark(
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

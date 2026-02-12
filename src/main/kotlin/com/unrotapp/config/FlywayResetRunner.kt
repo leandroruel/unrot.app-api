@@ -1,4 +1,4 @@
-package com.example.app.config
+package com.unrotapp.config
 
 import org.flywaydb.core.Flyway
 import org.springframework.boot.ApplicationRunner

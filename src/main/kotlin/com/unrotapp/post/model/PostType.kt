@@ -1,4 +1,4 @@
-package com.example.app.post.model
+package com.unrotapp.post.model
 
 enum class PostType {
     NOTE,

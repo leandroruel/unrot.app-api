@@ -1,17 +1,12 @@
-package com.example.app.post.model
+package com.unrotapp.post.model
 
 import jakarta.persistence.*
 import java.time.Instant
 import java.util.UUID
 
 @Entity
-@Table(
-    name = "post_bookmarks",
-    uniqueConstraints = [
-        UniqueConstraint(columnNames = ["post_id", "user_id"])
-    ]
-)
-class PostBookmark(
+@Table(name = "post_comments")
+class PostComment(
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -22,6 +17,9 @@ class PostBookmark(
 
     @Column(name = "user_id", nullable = false)
     val userId: UUID,
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    val content: String,
 
     @Column(nullable = false)
     val createdAt: Instant = Instant.now()

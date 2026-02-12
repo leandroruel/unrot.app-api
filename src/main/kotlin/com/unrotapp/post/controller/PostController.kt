@@ -1,11 +1,11 @@
-package com.example.app.post.controller
+package com.unrotapp.post.controller
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import com.example.app.post.dto.*
-import com.example.app.post.service.PostService
+import com.unrotapp.post.dto.*
+import com.unrotapp.post.service.PostService
 import java.util.UUID
 
 @RestController

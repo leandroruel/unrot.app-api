@@ -1,18 +1,18 @@
-package com.example.app.post.service
+package com.unrotapp.post.service
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import com.example.app.post.model.Post
-import com.example.app.post.model.PostComment
-import com.example.app.post.model.PostBookmark
-import com.example.app.post.model.PostLike
-import com.example.app.post.model.PostType
-import com.example.app.post.repository.PostBookmarkRepository
-import com.example.app.post.repository.PostCommentRepository
-import com.example.app.post.repository.PostLikeRepository
-import com.example.app.post.repository.PostRepository
+import com.unrotapp.post.model.Post
+import com.unrotapp.post.model.PostComment
+import com.unrotapp.post.model.PostBookmark
+import com.unrotapp.post.model.PostLike
+import com.unrotapp.post.model.PostType
+import com.unrotapp.post.repository.PostBookmarkRepository
+import com.unrotapp.post.repository.PostCommentRepository
+import com.unrotapp.post.repository.PostLikeRepository
+import com.unrotapp.post.repository.PostRepository
 import java.util.UUID
 
 @Service

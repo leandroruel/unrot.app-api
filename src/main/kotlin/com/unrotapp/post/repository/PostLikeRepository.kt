@@ -1,7 +1,7 @@
-package com.example.app.post.repository
+package com.unrotapp.post.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
-import com.example.app.post.model.PostLike
+import com.unrotapp.post.model.PostLike
 import java.util.UUID
 
 interface PostLikeRepository : JpaRepository<PostLike, UUID> {
