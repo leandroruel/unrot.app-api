@@ -1,5 +1,6 @@
 package com.unrotapp.storage
 
+import java.net.URI
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.MediaType
 import org.springframework.http.client.MultipartBodyBuilder
@@ -19,6 +20,8 @@ class StorageService(
     private val seaweedFsProperties: SeaweedFsProperties
 ) {
 
+    private val masterHost: String = URI.create(seaweedFsProperties.masterUrl).host
+
     fun upload(file: MultipartFile): FileMetadata {
         val assign = seaweedFsRestClient.get()
             .uri("/dir/assign")
@@ -26,7 +29,7 @@ class StorageService(
             .body(AssignResponse::class.java)
             ?: throw IllegalStateException("Failed to get file assignment from SeaweedFS")
 
-        val volumeUrl = "http://${assign.url}"
+        val volumeUrl = resolveVolumeUrl(assign.url)
 
         val bodyBuilder = MultipartBodyBuilder()
         bodyBuilder.part("file", object : ByteArrayResource(file.bytes) {
@@ -56,7 +59,8 @@ class StorageService(
             .body(LookupResponse::class.java)
             ?: return
 
-        val volumeUrl = "http://${lookup.locations.firstOrNull()?.url ?: return}"
+        val location = lookup.locations.firstOrNull() ?: return
+        val volumeUrl = resolveVolumeUrl(location.url)
         RestClient.create(volumeUrl)
             .delete()
             .uri("/$fileId")
@@ -74,7 +78,17 @@ class StorageService(
         val location = lookup.locations.firstOrNull()
             ?: throw NoSuchElementException("No volume location for file: $fileId")
 
-        return "http://${location.publicUrl ?: location.url}/$fileId"
+        return "${resolveVolumeUrl(location.publicUrl ?: location.url)}/$fileId"
+    }
+
+    /**
+     * Replaces the host in the volume URL with the master's host.
+     * SeaweedFS may return internal/private IPs (e.g. 10.0.0.43:8080)
+     * that are unreachable from external clients (like Docker containers).
+     */
+    private fun resolveVolumeUrl(volumeAddress: String): String {
+        val port = volumeAddress.substringAfter(":", "8080")
+        return "http://$masterHost:$port"
     }
 
     private data class AssignResponse(
