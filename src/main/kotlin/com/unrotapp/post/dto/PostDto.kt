@@ -10,11 +10,20 @@ data class PostResponse(
     val type: PostType,
     val content: String?,
     val category: CategoryResponse?,
+    val media: List<PostMediaResponse>,
     val likeCount: Long,
     val commentCount: Long,
     val bookmarkCount: Long,
     val shareCount: Long,
     val createdAt: Instant
+)
+
+data class PostMediaResponse(
+    val id: UUID,
+    val url: String,
+    val originalFilename: String?,
+    val mimeType: String,
+    val fileSizeBytes: Long
 )
 
 data class CategoryResponse(

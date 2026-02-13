@@ -4,16 +4,20 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import com.unrotapp.post.model.Post
 import com.unrotapp.post.model.PostComment
 import com.unrotapp.post.model.PostBookmark
 import com.unrotapp.post.model.PostLike
+import com.unrotapp.post.model.PostMedia
 import com.unrotapp.post.model.PostType
 import com.unrotapp.post.repository.CategoryRepository
 import com.unrotapp.post.repository.PostBookmarkRepository
 import com.unrotapp.post.repository.PostCommentRepository
 import com.unrotapp.post.repository.PostLikeRepository
+import com.unrotapp.post.repository.PostMediaRepository
 import com.unrotapp.post.repository.PostRepository
+import com.unrotapp.storage.StorageService
 import java.util.UUID
 
 @Service
@@ -22,7 +26,9 @@ class PostService(
     private val categoryRepository: CategoryRepository,
     private val commentRepository: PostCommentRepository,
     private val likeRepository: PostLikeRepository,
-    private val bookmarkRepository: PostBookmarkRepository
+    private val bookmarkRepository: PostBookmarkRepository,
+    private val mediaRepository: PostMediaRepository,
+    private val storageService: StorageService
 ) {
 
     fun findAll(pageable: Pageable): Page<Post> =
@@ -37,10 +43,13 @@ class PostService(
     fun findByCategorySlug(slug: String, pageable: Pageable): Page<Post> =
         postRepository.findByCategorySlug(slug, pageable)
 
-    fun create(authorId: UUID, type: PostType, content: String?, categorySlug: String?): Post {
+    fun create(authorId: UUID, type: PostType, content: String?, categorySlug: String?, file: MultipartFile?): Post {
         if (type == PostType.NOTE) {
             requireNotNull(content) { "Note content is required" }
             require(content.length <= 250) { "Note content must not exceed 250 characters" }
+        }
+        if (type == PostType.IMAGE || type == PostType.VIDEO) {
+            requireNotNull(file) { "${type.name.lowercase()} file is required" }
         }
         val category = if (type == PostType.ARTICLE) {
             requireNotNull(categorySlug) { "Article category is required" }
@@ -50,11 +59,37 @@ class PostService(
             require(categorySlug == null) { "Category is only allowed for articles" }
             null
         }
-        return postRepository.save(Post(authorId = authorId, type = type, content = content, category = category))
+        val post = postRepository.save(Post(authorId = authorId, type = type, content = content, category = category))
+
+        if (file != null) {
+            val metadata = storageService.upload(file)
+            mediaRepository.save(
+                PostMedia(
+                    postId = post.id!!,
+                    fileId = metadata.fileId,
+                    url = metadata.url,
+                    originalFilename = file.originalFilename,
+                    mimeType = file.contentType ?: "application/octet-stream",
+                    fileSizeBytes = metadata.fileSizeBytes
+                )
+            )
+        }
+
+        return post
     }
 
-    fun delete(id: UUID) =
+    @Transactional
+    fun delete(id: UUID) {
+        val mediaList = mediaRepository.findByPostId(id)
+        mediaList.forEach { storageService.delete(it.fileId) }
         postRepository.deleteById(id)
+    }
+
+    fun findMediaByPostId(postId: UUID): List<PostMedia> =
+        mediaRepository.findByPostId(postId)
+
+    fun findMediaByPostIds(postIds: List<UUID>): Map<UUID, List<PostMedia>> =
+        mediaRepository.findByPostIdIn(postIds).groupBy { it.postId }
 
     // Comments
 

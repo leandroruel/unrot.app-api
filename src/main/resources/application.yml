@@ -26,6 +26,13 @@ app:
       secret: ${JWT_SECRET:ZGV2LWNoYW5nZS1tZS1wbGVhc2UtMzItY2hhcnMtbWlu}
       issuer: unrotapp
       ttl: 1h
+  storage:
+    seaweedfs:
+      master-url: ${SEAWEEDFS_MASTER_URL:http://localhost:9333}
+
+spring.servlet.multipart:
+  max-file-size: 500MB
+  max-request-size: 500MB
 
 management:
   endpoints:
