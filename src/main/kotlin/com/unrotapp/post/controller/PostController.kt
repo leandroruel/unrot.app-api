@@ -3,10 +3,12 @@ package com.unrotapp.post.controller
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import com.unrotapp.post.dto.*
 import com.unrotapp.post.service.PostService
 import java.util.UUID
@@ -16,26 +18,43 @@ import java.util.UUID
 class PostController(private val postService: PostService) {
 
     @GetMapping
-    fun findAll(pageable: Pageable): Page<PostResponse> =
-        postService.findAll(pageable).map { it.toResponse() }
+    fun findAll(pageable: Pageable): Page<PostResponse> {
+        val page = postService.findAll(pageable)
+        val mediaMap = postService.findMediaByPostIds(page.content.mapNotNull { it.id })
+        return page.map { it.toResponse(mediaMap[it.id] ?: emptyList()) }
+    }
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable id: UUID): PostResponse =
-        postService.findById(id).toResponse()
+    fun findById(@PathVariable id: UUID): PostResponse {
+        val post = postService.findById(id)
+        return post.toResponse(postService.findMediaByPostId(id))
+    }
 
     @GetMapping("/author/{authorId}")
-    fun findByAuthor(@PathVariable authorId: UUID, pageable: Pageable): Page<PostResponse> =
-        postService.findByAuthorId(authorId, pageable).map { it.toResponse() }
+    fun findByAuthor(@PathVariable authorId: UUID, pageable: Pageable): Page<PostResponse> {
+        val page = postService.findByAuthorId(authorId, pageable)
+        val mediaMap = postService.findMediaByPostIds(page.content.mapNotNull { it.id })
+        return page.map { it.toResponse(mediaMap[it.id] ?: emptyList()) }
+    }
 
     @GetMapping("/category/{slug}")
-    fun findByCategory(@PathVariable slug: String, pageable: Pageable): Page<PostResponse> =
-        postService.findByCategorySlug(slug, pageable).map { it.toResponse() }
+    fun findByCategory(@PathVariable slug: String, pageable: Pageable): Page<PostResponse> {
+        val page = postService.findByCategorySlug(slug, pageable)
+        val mediaMap = postService.findMediaByPostIds(page.content.mapNotNull { it.id })
+        return page.map { it.toResponse(mediaMap[it.id] ?: emptyList()) }
+    }
 
-    @PostMapping
+    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("#jwt.getClaimAsString('role') == 'ADMIN' or #jwt.getClaimAsString('role') == 'PARTNER'")
-    fun create(@AuthenticationPrincipal jwt: Jwt, @RequestBody request: CreatePostRequest): PostResponse =
-        postService.create(jwt.userId(), request.type, request.content, request.categorySlug).toResponse()
+    fun create(
+        @AuthenticationPrincipal jwt: Jwt,
+        @RequestPart("post") request: CreatePostRequest,
+        @RequestPart("file", required = false) file: MultipartFile?
+    ): PostResponse {
+        val post = postService.create(jwt.userId(), request.type, request.content, request.categorySlug, file)
+        return post.toResponse(postService.findMediaByPostId(post.id!!))
+    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
