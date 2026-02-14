@@ -68,7 +68,7 @@ class StorageService(
             .toBodilessEntity()
     }
 
-    fun getPublicUrl(fileId: String): String {
+    fun fetch(fileId: String): ByteArray {
         val lookup = seaweedFsRestClient.get()
             .uri("/dir/lookup?volumeId={volumeId}", fileId.substringBefore(","))
             .retrieve()
@@ -78,7 +78,13 @@ class StorageService(
         val location = lookup.locations.firstOrNull()
             ?: throw NoSuchElementException("No volume location for file: $fileId")
 
-        return "${resolveVolumeUrl(location.publicUrl ?: location.url)}/$fileId"
+        val volumeUrl = resolveVolumeUrl(location.url)
+        return RestClient.create(volumeUrl)
+            .get()
+            .uri("/$fileId")
+            .retrieve()
+            .body(ByteArray::class.java)
+            ?: throw NoSuchElementException("File content not found: $fileId")
     }
 
     /**

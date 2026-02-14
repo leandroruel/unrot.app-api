@@ -21,7 +21,7 @@ fun Post.toResponse(media: List<PostMedia> = emptyList()) = PostResponse(
 
 fun PostMedia.toResponse() = PostMediaResponse(
     id = id!!,
-    url = url,
+    url = "/api/media/$fileId",
     originalFilename = originalFilename,
     mimeType = mimeType,
     fileSizeBytes = fileSizeBytes
