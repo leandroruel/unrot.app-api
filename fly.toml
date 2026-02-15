@@ -5,7 +5,7 @@ primary_region = 'gru'
 
 [env]
   SPRING_PROFILES_ACTIVE = 'prod'
-  JAVA_OPTS = '-Xmx180m -Xms180m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m'
+  JAVA_OPTS = '-Xmx300m -Xms300m -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m'
 
 [http_service]
   internal_port = 8080
@@ -22,6 +22,6 @@ primary_region = 'gru'
     path = '/actuator/health'
 
 [[vm]]
-  memory = '256mb'
+  memory = '512mb'
   cpu_kind = 'shared'
   cpus = 1
