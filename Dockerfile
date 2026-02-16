@@ -1,6 +1,7 @@
 # Stage 1: Build native image
 FROM ghcr.io/graalvm/native-image-community:25 AS builder
 RUN microdnf install -y findutils && microdnf clean all
+ENV GRADLE_OPTS="-Dorg.gradle.java.installations.auto-download=false"
 WORKDIR /app
 COPY gradle/ gradle/
 COPY gradlew .
