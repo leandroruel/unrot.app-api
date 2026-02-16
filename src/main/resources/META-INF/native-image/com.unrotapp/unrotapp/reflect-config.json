@@ -7,10 +7,35 @@
   },
   {
     "name": "org.flywaydb.core.extensibility.ConfigurationExtension",
-    "allDeclaredMethods": true
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
   },
   {
     "name": "org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.flywaydb.database.postgresql.TransactionalModel",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.flywaydb.core.internal.configuration.extensions.PrepareBaselineConfigurationExtension",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.flywaydb.core.internal.configuration.extensions.PrepareDeployConfigurationExtension",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.flywaydb.core.internal.configuration.extensions.PrepareCleanConfigurationExtension",
     "allDeclaredMethods": true,
     "allDeclaredConstructors": true,
     "allDeclaredFields": true
