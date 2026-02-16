@@ -1,0 +1,18 @@
+[
+  {
+    "type": "org.flywaydb.core.internal.configuration.extensions.PrepareScriptFilenameConfigurationExtension",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "type": "org.flywaydb.core.extensibility.ConfigurationExtension",
+    "allDeclaredMethods": true
+  },
+  {
+    "type": "org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  }
+]
