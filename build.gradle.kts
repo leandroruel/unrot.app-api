@@ -14,9 +14,8 @@ version = "0.0.1-SNAPSHOT"
 description = "Demo project for Spring Boot"
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -54,6 +53,7 @@ dependencies {
 kotlin {
 	compilerOptions {
 		freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
+		jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
 	}
 }
 
