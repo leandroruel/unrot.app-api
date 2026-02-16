@@ -31,14 +31,23 @@ class SecurityConfig {
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
+    @org.springframework.core.annotation.Order(1)
+    fun publicFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http
+            .securityMatcher("/auth/**", "/actuator/health", "/api/media/**")
+            .csrf { it.disable() }
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .authorizeHttpRequests { it.anyRequest().permitAll() }
+        return http.build()
+    }
+
+    @Bean
+    @org.springframework.core.annotation.Order(2)
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authorizeHttpRequests {
-                it.requestMatchers("/auth/**", "/actuator/health", "/api/media/**").permitAll()
-                it.anyRequest().authenticated()
-            }
+            .authorizeHttpRequests { it.anyRequest().authenticated() }
             .oauth2ResourceServer { it.jwt(Customizer.withDefaults()) }
         return http.build()
     }
