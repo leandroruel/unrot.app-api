@@ -39,5 +39,59 @@
     "allDeclaredMethods": true,
     "allDeclaredConstructors": true,
     "allDeclaredFields": true
+  },
+  {
+    "name": "com.unrotapp.user.User",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.unrotapp.user.Role",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.unrotapp.post.model.Post",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.unrotapp.post.model.PostMedia",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.unrotapp.post.model.PostLike",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.unrotapp.post.model.PostBookmark",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.unrotapp.post.model.PostCommant",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.unrotapp.post.model.Category",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.unrotapp.post.model.PostType",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true
   }
 ]
