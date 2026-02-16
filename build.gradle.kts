@@ -6,7 +6,6 @@ plugins {
 	kotlin("plugin.jpa") version "2.2.21"
 	id("org.springframework.boot") version "4.0.2"
 	id("io.spring.dependency-management") version "1.1.7"
-	id("org.graalvm.buildtools.native") version "0.10.6"
 }
 
 group = "com.unrotapp"
@@ -41,7 +40,6 @@ dependencies {
 	implementation("org.flywaydb:flyway-core")
 	implementation("org.flywaydb:flyway-database-postgresql")
 	runtimeOnly("org.postgresql:postgresql")
-	runtimeOnly("org.hibernate.orm:hibernate-graalvm")
 	testImplementation("com.h2database:h2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
@@ -60,12 +58,4 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-}
-
-graalvmNative {
-	binaries {
-		named("main") {
-			buildArgs.add("-H:Features=org.hibernate.graalvm.internal.GraalVMStaticFeature")
-		}
-	}
 }

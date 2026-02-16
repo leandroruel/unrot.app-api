@@ -1,22 +1,30 @@
-# Stage 1: Build native image
-FROM ghcr.io/graalvm/native-image-community:25 AS builder
-RUN microdnf install -y findutils && microdnf clean all
-ENV GRADLE_OPTS="-Dorg.gradle.java.installations.auto-download=false"
+# Stage 1: Build
+FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /app
 COPY gradle/ gradle/
 COPY gradlew .
 COPY build.gradle.kts settings.gradle.kts ./
 RUN chmod +x gradlew && ./gradlew dependencies --no-daemon || true
 COPY src/ src/
-RUN ./gradlew nativeCompile --no-daemon -x test
+RUN ./gradlew bootJar --no-daemon -x test
 
 # Stage 2: Run
-FROM debian:bookworm-slim
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
-RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
-COPY --from=builder /app/build/native/nativeCompile/unrotapp app
-RUN chown appuser:appgroup app
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+COPY --from=builder /app/build/libs/*.jar app.jar
+RUN chown appuser:appgroup app.jar
 USER appuser
 EXPOSE 8080
-ENTRYPOINT ["./app"]
+
+ENV JAVA_OPTS="-Xmx200m \
+  -XX:MaxMetaspaceSize=100m \
+  -XX:MaxDirectMemorySize=32m \
+  -Xss256k \
+  -XX:+UseSerialGC \
+  -XX:ReservedCodeCacheSize=32m \
+  -XX:+UseCompressedOops \
+  -XX:+UseCompressedClassPointers \
+  -XX:CompressedClassSpaceSize=32m"
+
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
