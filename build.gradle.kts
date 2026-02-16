@@ -61,3 +61,11 @@ kotlin {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+graalvmNative {
+	binaries {
+		named("main") {
+			buildArgs.add("-H:Features=org.hibernate.graalvm.internal.GraalVMStaticFeature")
+		}
+	}
+}
