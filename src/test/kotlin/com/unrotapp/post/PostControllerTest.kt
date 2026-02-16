@@ -343,6 +343,83 @@ class PostControllerTest {
             }
     }
 
+    // --- Article posts ---
+
+    @Test
+    fun createArticlePostWithCategory() {
+        val category = categoryRepository.save(Category(name = "Art", slug = "art-${System.nanoTime()}"))
+        val postJson = objectMapper.writeValueAsBytes(
+            mapOf("type" to "ARTICLE", "content" to "Full article here", "categorySlug" to category.slug)
+        )
+
+        mockMvc.multipart("/api/posts") {
+            part(MockPart("post", null, postJson, MediaType.APPLICATION_JSON))
+            header("Authorization", "Bearer $token")
+        }
+            .andExpect {
+                status { isCreated() }
+                jsonPath("$.type") { value("ARTICLE") }
+                jsonPath("$.content") { value("Full article here") }
+                jsonPath("$.category.slug") { value(category.slug) }
+            }
+    }
+
+    @Test
+    fun createArticlePostWithoutCategoryFails() {
+        val postJson = objectMapper.writeValueAsBytes(mapOf("type" to "ARTICLE", "content" to "No category"))
+
+        assertThrows<Exception> {
+            mockMvc.multipart("/api/posts") {
+                part(MockPart("post", null, postJson, MediaType.APPLICATION_JSON))
+                header("Authorization", "Bearer $token")
+            }.andReturn()
+        }
+    }
+
+    // --- Regular USER can read posts ---
+
+    @Test
+    fun regularUserCanReadPosts() {
+        createNote("Readable post")
+
+        val email = "reader-${System.nanoTime()}@example.com"
+        val payload = mapOf("email" to email, "password" to "password123", "displayName" to "Reader")
+        val result = mockMvc.post("/auth/register") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(payload)
+        }.andReturn()
+        val userToken = objectMapper.readTree(result.response.contentAsString).get("accessToken").textValue()
+
+        mockMvc.get("/api/posts") {
+            header("Authorization", "Bearer $userToken")
+        }
+            .andExpect {
+                status { isOk() }
+                jsonPath("$.content.length()") { value(greaterThanOrEqualTo(1)) }
+            }
+    }
+
+    @Test
+    fun regularUserCanReadFeed() {
+        createNote("Feed visible post")
+
+        val email = "feedreader-${System.nanoTime()}@example.com"
+        val payload = mapOf("email" to email, "password" to "password123", "displayName" to "Feed Reader")
+        val result = mockMvc.post("/auth/register") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(payload)
+        }.andReturn()
+        val userToken = objectMapper.readTree(result.response.contentAsString).get("accessToken").textValue()
+
+        mockMvc.get("/api/feed") {
+            header("Authorization", "Bearer $userToken")
+        }
+            .andExpect {
+                status { isOk() }
+                jsonPath("$.length()") { value(greaterThanOrEqualTo(1)) }
+            }
+    }
+
     // --- Edge cases ---
 
     @Test
