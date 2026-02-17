@@ -14,6 +14,9 @@ import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.web.SecurityFilterChain
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.jwk.JWKSet
@@ -34,7 +37,7 @@ class SecurityConfig {
     @org.springframework.core.annotation.Order(1)
     fun publicFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            .securityMatcher("/auth/**", "/actuator/health", "/api/media/**")
+            .securityMatcher("/auth/**", "/actuator/health", "/api/media/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { it.anyRequest().permitAll() }
@@ -47,9 +50,26 @@ class SecurityConfig {
         http
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authorizeHttpRequests { it.anyRequest().authenticated() }
-            .oauth2ResourceServer { it.jwt(Customizer.withDefaults()) }
+            .authorizeHttpRequests {
+                it
+                    .anyRequest().authenticated()
+            }
+            .oauth2ResourceServer { it.jwt { jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()) } }
         return http.build()
+    }
+
+    @Bean
+    fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
+        val defaultGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
+        val converter = JwtAuthenticationConverter()
+        converter.setJwtGrantedAuthoritiesConverter { jwt ->
+            val defaults = defaultGrantedAuthoritiesConverter.convert(jwt)
+            val roles = (jwt.getClaimAsStringList("role")
+                ?: listOfNotNull(jwt.getClaimAsString("role")))
+                .map { SimpleGrantedAuthority("ROLE_$it") }
+            (defaults ?: emptyList()) + roles
+        }
+        return converter
     }
 
     @Bean
