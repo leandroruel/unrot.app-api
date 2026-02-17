@@ -60,10 +60,14 @@ class SecurityConfig {
 
     @Bean
     fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
+        val defaultGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
         val converter = JwtAuthenticationConverter()
         converter.setJwtGrantedAuthoritiesConverter { jwt ->
-            val role = jwt.getClaimAsString("role")
-            if (role != null) listOf(SimpleGrantedAuthority("ROLE_$role")) else emptyList()
+            val defaults = defaultGrantedAuthoritiesConverter.convert(jwt)
+            val roles = (jwt.getClaimAsStringList("role")
+                ?: listOfNotNull(jwt.getClaimAsString("role")))
+                .map { SimpleGrantedAuthority("ROLE_$it") }
+            (defaults ?: emptyList()) + roles
         }
         return converter
     }
