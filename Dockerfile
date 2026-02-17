@@ -17,14 +17,14 @@ RUN chown appuser:appgroup app.jar
 USER appuser
 EXPOSE 8080
 
-ENV JAVA_OPTS="-Xmx200m \
-  -XX:MaxMetaspaceSize=100m \
+ENV JAVA_OPTS="-Xmx180m \
+  -XX:MaxMetaspaceSize=150m \
   -XX:MaxDirectMemorySize=32m \
   -Xss256k \
   -XX:+UseSerialGC \
   -XX:ReservedCodeCacheSize=32m \
   -XX:+UseCompressedOops \
   -XX:+UseCompressedClassPointers \
-  -XX:CompressedClassSpaceSize=32m"
+  -XX:CompressedClassSpaceSize=48m"
 
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
